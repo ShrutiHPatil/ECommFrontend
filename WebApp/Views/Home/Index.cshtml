@@ -81,6 +81,23 @@
             });
         }
 
+        function checkUserSession() {
+            $.ajax({
+                url: '/Home/CheckSession',
+                type: 'GET',
+                success: function (response) {
+                    if (!response.isAuthenticated) {
+                        window.location.href = '/Home/Login'; // Redirect to login
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+        // Check session every 5 seconds
+        setInterval(checkUserSession, 5000);
+
         function displayProducts(products) {
             var container = $("#productContainer");
 
@@ -90,20 +107,24 @@
                 var imageUrl = product.imageUrl;
 
                 var cardHtml = `
-                            <div class="col-md-3">
+                            
                                 <div class="productCard">
+                                <div class="image">
                                     <img src="${imageUrl}" alt="${product.name}" width="200" height="300">
-                                    <h6>${product.name}</h6>
-                                    <p>Price: $${product.price.toFixed(2)}</p>
-                                    <!-- Input field for quantity -->
+                                </div>
+                                <div>
+                                        <h6 class="productDetails">${product.name}</h6>
+                                        <p class="productDetails">Price: $${product.price.toFixed(2)}</p>
+                                </div>
+                                <div class="addandquantity">
                                     <input type="number" class="quantityInput" value="1" min="1">
                                     <!-- Button to add product to cart -->
                                     <button class="addToCartBtn" data-product-id="${product.productId}">
                                         Add
                                     </button>
-                                    <!-- Add more details or actions as needed -->
                                 </div>
-                            </div>
+                                </div>
+                           
                         `;
 
                 container.append(cardHtml);
@@ -388,7 +409,7 @@
 
 </script>
 <style>
-    .productCard {
+   /*  .productCard {
         border: 1px solid #ddd;
         height: 400px;
         width: 250px;
@@ -398,7 +419,7 @@
         border-bottom: 1px solid #ddd;
         padding-bottom: 10px;
         margin-bottom: 10px;
-    }
+    } */
 
 
     .productCardItem {
@@ -407,7 +428,7 @@
         width: 250px;
         margin: 15px;
         border-radius: 10px;
-        background-color: #ffe6b3;
+        background-color: #e6e6ff;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -425,6 +446,23 @@
         width: 200px;
     }
 
+    .image {
+        justify-content: center;
+        display: flex;
+        padding-top: 21px;
+        padding-bottom: 10px
+    }
+
+    .addandquantity {
+        display: flex;
+        justify-content: center;
+    }
+
+    .productDetails {
+        justify-content: center;
+        display: flex;
+        padding-right: 21px;
+    }
     removeQuantityBtn {
         /*  position: absolute;
             bottom: 22px;
@@ -452,7 +490,7 @@
         bottom: 0;
     }
 
-    .quantityInput {
+   /*  .quantityInput {
         position: absolute;
         bottom: 22px;
         left: 50px;
@@ -470,6 +508,42 @@
         height: 25px;
         border-color: #ffe6b3;
         border-radius: 4px;
+    } */
+
+    .productCard {
+        display: flex;
+        flex-direction: column;
+         justify-content: space-between; */ /* Adjusts children spacing */
+        
+        border: 1px solid #ddd;
+        height: auto; /* Flexible height */
+        width: 250px;
+        margin: 13px;
+        border-radius: 10px;
+        background-color: #e6e6ff;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .addToCartBtn {
+        /* Remove absolute positioning */
+        width: 60px;
+        height: 25px;
+        border-color: #ffe6b3;
+        border-radius: 4px;
+        font-size: 12px;
+        right: 12px;
+        padding: 4px;
+        margin: 5px; /* Add some margin for spacing */
+    }
+
+    .quantityInput {
+        width: 60px;
+        height: 25px;
+        border-color: #ffe6b3;
+        border-radius: 4px;
+        font-size: 12px;
+        margin: 5px; /* Add some margin for spacing */
     }
 
     .popup {
@@ -575,10 +649,11 @@
     }
 
     #user {
-        position: fixed;
+        position: absolute;
         margin: 0;
         top: 55px;
-        right: 191px;
+        /* right: 191px; */
+        right:5%;
         margin-right: 1%;
         transform: translateX(0%);
     }
@@ -586,8 +661,57 @@
     .navbar {
         background-color: #ffe6b3;
     }
-</style>
 
+    .selectoptions{
+        /* height:"5%"; */
+        width:"3%";
+    }
+    .Navigation{
+        top: 0;
+        position: sticky;
+        background-color:#F4F4F4;
+        padding-bottom:70px;
+    }
+    .custom-dropdown {
+        position: relative;
+        display:inline-flex;
+    }
+
+        .custom-dropdown select {
+            width: auto;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+            .custom-dropdown select:focus {
+                outline: none;
+                border-color: #007bff; /* Change the border color on focus if needed */
+            }
+.filters{
+        top: 56px;
+        margin-top:-50px;
+        position: sticky;
+        
+        padding-bottom: 20px;
+        
+}
+
+    .modal-content{
+        z-index:auto;
+    }
+
+    .modal-backdrop.show {
+        display: none;
+        z-index: -1;
+        width:50%;
+    }
+
+    #sortDropdown{
+        width: 100px;
+    }
 
 </style>
 <body>
@@ -602,7 +726,7 @@
             Cart
         </button>
     </nav>
-    <div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+    <div class="modal" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document" id="user">
             <div class="modal-content modal-sm">
                 <div class="modal-header">
@@ -644,31 +768,31 @@
         </div>
     </div>
 
-
-    <label for="colorDropdown">Filter by Color:</label>
+    <div class="filters">
+    <label for="colorDropdown" class="form-label"></label>
+    <div class="custom-dropdown">
     <select id="colorDropdown">
-        <option value="">All Colors</option>
-        <option value="Beige">Beige</option>
-        <option value="Gold">Gold</option>
-        <option value="Silver">Silver</option>
-        <option value="White">White</option>
-        <option value="Gray">Gray</option>
-        <option value="Yellow">Yellow</option>
-        <option value="Violet">Violet</option>
-        <option value="Maroon">Maroon</option>
-        <option value="Vintage">Vintage</option>
-        <option value="Green">Green</option>
-        <option value="Cream">Cream</option>
-        <option value="Pink">Pink</option>
+        <option  value="">Filter</option>
+        <option  value="Blue">Blue</option>
+        <option  value="Gold">Gold</option>
+        <option  value="Red">Red</option>
+        <option  value="White">White</option>
+        <option  value="Gray">Gray</option>
+        <option  value="Yellow">Yellow</option>
+        <option  value="Green">Green</option>
+        <option  value="Pink">Pink</option>
     </select>
+    </div>
+    <div class="custom-dropdown">
 
     <select id="sortDropdown">
         <option value="default">Sort By</option>
-        <option value="lowToHigh">Price Low to High</option>
-        <option value="highToLow">Price High to Low</option>
+        <option value="lowToHigh">Low to High</option>
+        <option value="highToLow">High to Low</option>
     </select>
-
-
+    </div>
+    </div>
+    
     <div id="popup" class="popup">
         <span class="popup-message" id="addToCartMessage"></span>
 

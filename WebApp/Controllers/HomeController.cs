@@ -78,10 +78,20 @@ namespace Login.Controllers
 			HttpContext.Session.Clear();
 			return RedirectToAction("Login");
 		}
-		public IActionResult Privacy()
+
+        public IActionResult CheckSession()
+        {
+            if (HttpContext.Session.GetInt32("UserId") == null)
+            {
+                return Json(new { isAuthenticated = false });
+            }
+            return Json(new { isAuthenticated = true });
+        }
+        public IActionResult Privacy()
 		{
 			return View();
 		}
+
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
